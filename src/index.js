@@ -13,22 +13,46 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 function buildToDo(person, todo, color) {
-  // set variables,elements,selectors
+  // newList
   let newListItem = document.createElement("li");
   newListItem.className = "list-item";
-  let btn = document.createElement("button");
-
-  // assign values
-  btn.textContent = "✔";
   newListItem.textContent = `${person}: ${todo}`;
   newListItem.style.color = color;
 
-  // appending to
-  newListItem.appendChild(btn);
-  document.querySelector("#tasks").appendChild(newListItem);
-
-  // add eventListener
+  // button
+  let btn = document.createElement("button");
   btn.addEventListener("click", handleDelete);
+  btn.textContent = "✔";
+  newListItem.appendChild(btn);
+
+  // get children of ul
+  let tasksNode = document.getElementById("tasks");
+  let taskList = [];
+  while (tasksNode.firstChild) {
+    const oldChild = tasksNode.removeChild(tasksNode.firstChild);
+    taskList.push(oldChild);
+  }
+  // add new li
+  taskList.push(newListItem);
+
+  // sort by color(priority)
+  taskList.sort((a, b) => {
+    const colorA = a.style.color;
+    const colorB = b.style.color;
+
+    if (colorA === colorB) {
+      return 0;
+    } else if (colorA === "red" && colorB !== "red") {
+      return -1;
+    } else if (colorA === "orange" && colorB === "green") {
+      return -1;
+    } else {
+      return 1;
+    }
+  });
+
+  // append to DOM
+  tasksNode.append(...taskList);
 }
 
 function handleDelete(e) {
